@@ -1,45 +1,54 @@
 const dictionary = require("../models/dictionary");
+const asyncHandler = require("express-async-handler");
 
-const putWord = async (req, res) => {
+const putWord = asyncHandler(async (req, res) => {
   try {
     const dict = await dictionary.create(req.body);
     res.status(200).json(dict);
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: error.message });
+    res.status(500);
+    throw new Error(error.message);
   }
-};
+});
 
-const getWordbyId = async (req, res) => {
+const getWordbyId = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
     const dict = await dictionary.findById(id);
     res.status(200).json(dict);
+    if (!dict) {
+      res.status(404);
+      throw new Error(`cannot find ${id}`);
+    }
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: error.message });
+    res.status(500);
+    throw new Error(error.message);
   }
-};
+});
 
-const findWords = async (req, res) => {
+const findWords = asyncHandler(async (req, res) => {
   const { word } = req.query;
   try {
     const dict = await dictionary.find({ word });
     res.status(200).json(dict);
+    if (!dict) {
+      res.status(404);
+      throw new Error(`cannot find ${word}`);
+    }
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: error.message });
+    res.status(500);
+    throw new Error(error.message);
   }
-};
+});
 
-const retrieveData = async (req, res) => {
+const retrieveData = asyncHandler(async (req, res) => {
   try {
     const dict = await dictionary.find({});
     res.status(200).json(dict);
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: error.message });
+    res.status(500);
+    throw new Error(error.message);
   }
-};
+});
 
 module.exports = { putWord, getWordbyId, findWords, retrieveData };
