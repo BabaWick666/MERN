@@ -51,4 +51,43 @@ const retrieveData = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { putWord, getWordbyId, findWords, retrieveData };
+const updateWord = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    //const { meaning } = req.body;
+    const dict = await dictionary.findByIdAndUpdate(id, req.body);
+    if (!dict) {
+      res.status(404);
+      throw new Error(`cannot find ${id}`);
+    }
+    const updates = await dictionary.findById(id);
+    res.status(200).json(updates);
+  } catch (error) {
+    res.status(500);
+    throw new Error(error.message);
+  }
+});
+
+const deleteWord = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const dict = await dictionary.findByIdAndDelete(id);
+    if (!dict) {
+      res.status(404);
+      throw new Error(`cannot find ${id}`);
+    }
+    res.status(200).json(dict);
+  } catch (error) {
+    res.status(500);
+    throw new Error(error.message);
+  }
+});
+
+module.exports = {
+  putWord,
+  getWordbyId,
+  findWords,
+  retrieveData,
+  updateWord,
+  deleteWord,
+};
